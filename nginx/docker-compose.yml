@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  # nginx reverse proxy to enable the api and front end to be served from the
+  # same host:port.
+  # http://web-app.localhost:5000 -> dockerhost:3000
+  # http://local-app.dev -> dockerhost:3000
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80" # or 5000:80 either one works, Nginx will respond ok either with or without a port
+      - "443:443"
+    volumes:
+      - ${PWD}/nginx:/etc/nginx # SSL Development certificates
+      - ${PWD}/devcerts:/etc/nginx/ssl

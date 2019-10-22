@@ -1,0 +1,33 @@
+[http]
+  [http.routers]
+    [http.routers.http-to-local-app]
+      # You can change the rules here and make it more complex. Check traefik
+      # docs!
+      rule = "Host(`local-app.dev`)"
+      service = "local-app"
+      entrypoints = ["http"]
+      middlewares = ["redirect"]
+
+    [http.routers.https-to-local-app]
+      rule = "Host(`local-app.dev`)"
+      service = "local-app"
+      entrypoints = ["https"]
+      [http.routers.https-to-local-app.tls]
+
+  [http.services]
+    [http.services.local-app]
+      [http.services.my-ap.loadBalancer]
+       passHostHeader = true
+
+        [[http.services.local-app.loadBalancer.servers]]
+          # This is where your dev app lives.
+          url = "http://127.0.0.1:3000/"
+
+  [http.middlewares]
+    [http.middlewares.redirect.redirectScheme]
+      scheme = "https"
+
+[tls]
+  [[tls.certificates]]
+    certFile = "/etc/certs/local-app.dev+2.pem"
+    keyFile = "/etc/certs/local-app.dev+2-key.pem"
